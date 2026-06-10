@@ -5,6 +5,7 @@ __pycache__/
 *.pyd
 
 # Virtual environment
+chroma_db/
 venv/
 env/
 
@@ -16,8 +17,8 @@ env/
 .env
 apis.env
 
-# Chroma vector database
-chroma_langchain_db/
+# Chrome vector database
+chrome_langchain_db/
 
 # OS files
 .DS_Store

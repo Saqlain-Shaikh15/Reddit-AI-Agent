@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reddit AI Agent</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <div class="container">
@@ -27,32 +27,6 @@
     </div>
   </div>
 
-  <script>
-    const subredditForm = document.getElementById('subreddit-form');
-    const subredditInput = document.getElementById('subreddit-input');
-    const chatContainer = document.getElementById('chat-container');
-    const chatWindow = document.getElementById('chat-window');
-    const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
-
-    // Placeholder functions
-    document.getElementById('load-subreddit').addEventListener('click', () => {
-      const subreddit = subredditInput.value.trim();
-      if (subreddit) {
-        chatContainer.classList.remove('disabled');
-        chatWindow.innerHTML += `<div class="bot-message">Loaded subreddit: r/${subreddit}</div>`;
-      }
-    });
-
-    sendBtn.addEventListener('click', () => {
-      const message = userInput.value.trim();
-      if (message) {
-        chatWindow.innerHTML += `<div class="user-message">${message}</div>`;
-        chatWindow.innerHTML += `<div class="bot-message">[Bot would answer here]</div>`;
-        userInput.value = "";
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-      }
-    });
-  </script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-</html>
+</html> 
