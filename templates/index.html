@@ -4,29 +4,73 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reddit AI Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="container">
-    <h1>Reddit AI Agent</h1>
+  <div class="page">
+    <div class="container">
 
-    <!-- Subreddit Input -->
-    <form id="subreddit-form">
-      <input type="text" id="subreddit-input" placeholder="Enter subreddit (e.g., python)" required>
-      <button type="button" id="load-subreddit">Load</button>
-    </form>
+      <header class="app-header">
+        <div class="header-mark" aria-hidden="true">
+          <span class="arrow up"></span>
+          <span class="arrow down"></span>
+        </div>
+        <div class="header-text">
+          <h1>Reddit AI Agent</h1>
+          <p class="subtitle">Ask questions, get answers sourced from a subreddit</p>
+        </div>
+      </header>
 
-    <!-- Chat Container -->
-    <div id="chat-container" class="disabled">
-      <div id="chat-window"></div>
+      <!-- Subreddit Input -->
+      <form id="subreddit-form" class="subreddit-form">
+        <label for="subreddit-input" class="field-label">Subreddit</label>
+        <div class="subreddit-field">
+          <span class="prefix" aria-hidden="true">r/</span>
+          <input
+            type="text"
+            id="subreddit-input"
+            name="subreddit"
+            placeholder="python"
+            autocomplete="off"
+            spellcheck="false"
+            required
+          >
+          <button type="button" id="load-subreddit">
+            <span>Load</span>
+          </button>
+        </div>
+        <p id="subreddit-status" class="subreddit-status"></p>
+      </form>
 
-      <div class="chat-input">
-        <input type="text" id="user-input" placeholder="Type your question...">
-        <button id="send-btn">Send</button>
+      <!-- Chat Container -->
+      <div id="chat-container" class="chat-container disabled">
+        <div class="chat-thread-rail" aria-hidden="true"></div>
+        <div id="chat-window" class="chat-window">
+          <div class="empty-state">
+            <p>Load a subreddit above to start the conversation.</p>
+          </div>
+        </div>
+
+        <div class="chat-input">
+          <input
+            type="text"
+            id="user-input"
+            placeholder="Ask something about this subreddit…"
+            autocomplete="off"
+            disabled
+          >
+          <button id="send-btn" disabled>
+            <span>Send</span>
+          </button>
+        </div>
       </div>
+
     </div>
   </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-</html> 
+</html>

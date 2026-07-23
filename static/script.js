@@ -1,4 +1,5 @@
 const subredditInput = document.getElementById('subreddit-input');
+const subredditStatus = document.getElementById('subreddit-status');
 const chatContainer = document.getElementById('chat-container');
 const chatWindow = document.getElementById('chat-window');
 const userInput = document.getElementById('user-input');
@@ -6,8 +7,8 @@ const sendBtn = document.getElementById('send-btn');
 
 let currentSubreddit = "";
 let lastLoadedSubreddit = "";
+let subreddit = false;
 
-// changed - converts LLM markdown-style text to readable HTML
 function formatResponse(text) {
     return text
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // **bold** → <strong>
@@ -15,24 +16,76 @@ function formatResponse(text) {
         .replace(/\n/g, '<br>');                             // newlines → <br>
 }
 
-document.getElementById('load-subreddit').addEventListener('click', () => {
-    const subreddit = subredditInput.value.trim();
-    if (subreddit) {
-        currentSubreddit = subreddit;
-        chatContainer.classList.remove('disabled');
+function clearEmptyState() {
+    const emptyState = chatWindow.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+}
 
-        if (subreddit !== lastLoadedSubreddit) {
-            chatWindow.innerHTML += `<div class="bot-message">Searching for subreddit: r/${subreddit}</div>`;
-            lastLoadedSubreddit = subreddit;
-        }
+function appendMessage(role, html) {
+    clearEmptyState();
+    const el = document.createElement('div');
+    el.className = role;
+    el.innerHTML = html;
+    chatWindow.appendChild(el);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+    return el;
+}
+
+async function loadSubreddit() {
+    const subreddit = subredditInput.value.trim().replace(/^r\//i, '');
+    if (!subreddit) return;
+
+    const response = await fetch('/check-subreddit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({subreddit})
+    });
+
+    const data = await response.json();
+
+    if(!data.exists){
+        subredditStatus.textContent = `r/${subreddit} does not exist`;
+        subredditStatus.classList.remove('active');
+        return;
+    }
+
+    currentSubreddit = subreddit;
+    chatContainer.classList.remove('disabled');
+    userInput.disabled = false;
+    sendBtn.disabled = false;
+
+    subredditStatus.textContent = `Connected to r/${subreddit}`;
+    subredditStatus.classList.add('active');
+
+    if (subreddit !== lastLoadedSubreddit) {
+        appendMessage('bot-message', `Searching for subreddit: r/${subreddit}`);
+        lastLoadedSubreddit = subreddit;
+    }
+
+    userInput.focus();
+}
+
+document.getElementById('load-subreddit').addEventListener('click', loadSubreddit);
+
+subredditInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        loadSubreddit();
     }
 });
 
-sendBtn.addEventListener('click', async () => {
+document.getElementById('subreddit-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    loadSubreddit();
+});
+
+async function sendMessage() {
     const message = userInput.value.trim();
     if (!message) return;
 
-    chatWindow.innerHTML += `<div class="user-message">${message}</div>`;
+    appendMessage('user-message', message);
     userInput.value = "";
 
     sendBtn.disabled = true;
@@ -46,17 +99,25 @@ sendBtn.addEventListener('click', async () => {
         });
 
         const data = await response.json();
-        if (!response.ok) {  // changed - checks if status is 4xx/5xx
-            chatWindow.innerHTML += `<div class="bot-message error">${data.error}</div>`;  // changed - shows e.g. "Subreddit r/xyz does not exist"
+        if (!response.ok) {
+            appendMessage('bot-message error', data.error);
         } else {
-            chatWindow.innerHTML += `<div class="bot-message">${formatResponse(data.answer)}</div>`;
+            appendMessage('bot-message', formatResponse(data.answer));
         }
-        chatWindow.scrollTop = chatWindow.scrollHeight;
     } catch (err) {
-        chatWindow.innerHTML += `<div class="bot-message error">Something went wrong. Please try again.</div>`;
+        appendMessage('bot-message error', 'Something went wrong. Please try again.');
     } finally {
         sendBtn.disabled = false;
         userInput.disabled = false;
         userInput.focus();
+    }
+}
+
+sendBtn.addEventListener('click', sendMessage);
+
+userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
     }
 });

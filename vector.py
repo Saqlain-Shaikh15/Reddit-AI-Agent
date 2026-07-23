@@ -52,5 +52,5 @@ def make_retriever(subreddit_name):
     )
 
     vector_store.add_documents(documents=documents, ids=ids)
-    print("done with make_retriever")
+
     return vector_store.as_retriever(search_kwargs={"k": 5})

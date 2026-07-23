@@ -1,113 +1,425 @@
+/* ===================================================================
+   Reddit AI Agent — design tokens
+   =================================================================== */
+:root {
+  --bg: #0B1416;
+  --panel: #151B1E;
+  --panel-raised: #1B2226;
+  --border: #2A3235;
+  --border-soft: #202729;
+
+  --text-primary: #E4E6E7;
+  --text-secondary: #8A9296;
+  --text-faint: #5C6467;
+
+  --accent: #FF4500;
+  --accent-hover: #FF5A1F;
+  --accent-dim: rgba(255, 69, 0, 0.14);
+  --accent-line: rgba(255, 69, 0, 0.35);
+
+  --error: #EA4B4B;
+  --error-dim: rgba(234, 75, 75, 0.12);
+
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: #f6f8fa;
   margin: 0;
-  padding: 0;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255, 69, 0, 0.08), transparent 40%),
+    var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 48px 20px 32px;
 }
 
 .container {
-  max-width: 700px;
-  margin: 30px auto;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-h1 {
-  text-align: center;
-  color: #333;
-}
-
-#subreddit-form {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 15px;
-}
-
-#subreddit-input {
-  padding: 10px;
-  width: 70%;
-  border: 1px solid #ccc;
-  border-radius: 6px 0 0 6px;
-  outline: none;
-}
-
-#load-subreddit {
-  padding: 10px 15px;
-  border: none;
-  background: #4CAF50;
-  color: white;
-  border-radius: 0 6px 6px 0;
-  cursor: pointer;
-}
-
-#load-subreddit:hover {
-  background: #45a049;
-}
-
-#chat-container {
+  width: 100%;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
-  height: 500px;
+  gap: 20px;
 }
 
-#chat-container.disabled {
-  opacity: 0.6;
+/* ===================================================================
+   Header
+   =================================================================== */
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 2px 8px;
+}
+
+.header-mark {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--panel-raised);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.header-mark .arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.header-mark .arrow.up {
+  border-bottom: 7px solid var(--accent);
+}
+
+.header-mark .arrow.down {
+  border-top: 7px solid var(--border);
+}
+
+.header-text h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ===================================================================
+   Subreddit form
+   =================================================================== */
+.subreddit-form {
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px 18px;
+}
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+
+.subreddit-field {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.subreddit-field:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.subreddit-field .prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 4px 0 14px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 15px;
+  color: var(--accent);
+  user-select: none;
+}
+
+.subreddit-field input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  padding: 12px 10px 12px 2px;
+}
+
+.subreddit-field input::placeholder {
+  color: var(--text-faint);
+}
+
+.subreddit-field button {
+  flex-shrink: 0;
+  border: none;
+  padding: 0 20px;
+  background: var(--accent);
+  color: #0B1416;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.subreddit-field button:hover {
+  background: var(--accent-hover);
+}
+
+.subreddit-field button:active {
+  background: var(--accent);
+}
+
+.subreddit-status {
+  margin: 10px 2px 0;
+  min-height: 16px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.subreddit-status.active::before {
+  content: "●";
+  color: var(--accent);
+  margin-right: 6px;
+  font-size: 9px;
+  vertical-align: middle;
+}
+
+/* ===================================================================
+   Chat container
+   =================================================================== */
+.chat-container {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.chat-container.disabled {
+  opacity: 0.45;
   pointer-events: none;
 }
 
-#chat-window {
-  flex: 1;
-  overflow-y: auto;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
-  margin-bottom: 10px;
+.chat-thread-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 27px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--accent-line), transparent 90%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.user-message, .bot-message {
-  max-width: 80%;
-  margin-bottom: 10px;
+.chat-window {
+  position: relative;
+  z-index: 1;
+  height: 420px;
+  overflow-y: auto;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chat-window::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.empty-state {
+  margin: auto;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 13.5px;
+  padding: 0 30px;
+}
+
+/* Messages styled like a comment thread: node + connecting rail */
+.user-message,
+.bot-message {
+  position: relative;
+  max-width: 84%;
   padding: 10px 14px;
-  border-radius: 8px;
-  line-height: 1.4;
+  border-radius: var(--radius-md);
+  font-size: 14.5px;
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
 .user-message {
-  background: #4CAF50;
-  color: white;
-  margin-left: auto;
+  align-self: flex-end;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-line);
+  color: var(--text-primary);
+  border-bottom-right-radius: 4px;
 }
 
 .bot-message {
-  background: #e4e6eb;
-  color: #333;
-  margin-right: auto;
+  align-self: flex-start;
+  margin-left: 22px;
+  background: var(--panel-raised);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-bottom-left-radius: 4px;
 }
 
+.bot-message::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--panel);
+}
+
+.bot-message.error {
+  background: var(--error-dim);
+  border-color: rgba(234, 75, 75, 0.35);
+  color: #FF9E9E;
+}
+
+.bot-message.error::before {
+  background: var(--error);
+}
+
+.bot-message strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* ===================================================================
+   Chat input
+   =================================================================== */
 .chat-input {
+  position: relative;
+  z-index: 1;
   display: flex;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid var(--border-soft);
+  background: var(--panel);
 }
 
-#user-input {
+.chat-input input {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px 0 0 6px;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14.5px;
   outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-#send-btn {
-  padding: 10px 15px;
+.chat-input input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.chat-input input:disabled {
+  opacity: 0.5;
+}
+
+.chat-input input::placeholder {
+  color: var(--text-faint);
+}
+
+.chat-input button {
+  flex-shrink: 0;
   border: none;
-  background: #2196F3;
-  color: white;
-  border-radius: 0 6px 6px 0;
+  border-radius: var(--radius-md);
+  padding: 0 22px;
+  background: var(--accent);
+  color: #0B1416;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
 }
 
-#send-btn:hover {
-  background: #1976D2;
+.chat-input button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.chat-input button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===================================================================
+   Accessibility
+   =================================================================== */
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* ===================================================================
+   Mobile
+   =================================================================== */
+@media (max-width: 480px) {
+  .page {
+    padding: 28px 12px 20px;
+  }
+
+  .chat-window {
+    height: 360px;
+  }
+
+  .user-message,
+  .bot-message {
+    max-width: 92%;
+  }
 }

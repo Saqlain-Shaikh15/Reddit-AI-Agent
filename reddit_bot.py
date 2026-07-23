@@ -3,6 +3,13 @@ import pandas as pd
 import os
 from reference import reddit
 
+def do_subreddit_exist(subreddit_name):
+    try:
+        reddit.subreddit(subreddit_name).id 
+        return True
+    except Exception as e:
+        return False
+
 def submission_to_df(submission, listing_type):
     return {
         "id": submission.id,
@@ -16,11 +23,11 @@ def submission_to_df(submission, listing_type):
     }
 
 def make_dataframe(subreddit_name):
-    try:  # changed - wrap Reddit API call to catch invalid subreddits
+    try:
         subreddit = reddit.subreddit(subreddit_name)
-        _ = subreddit.id  # changed - this line actually triggers the API call, forces PRAW to validate the subreddit
-    except Exception:  # changed - PRAW throws Redirect or NotFound for invalid subreddits
-        raise ValueError(f"Subreddit r/{subreddit_name} does not exist")  # changed
+        _ = subreddit.id 
+    except Exception: 
+        raise ValueError(f"Subreddit r/{subreddit_name} does not exist")  
     
     print("making dataframe")
     df_hot = pd.DataFrame([submission_to_df(submission, "hot") for submission in reddit.subreddit(subreddit_name).hot(limit=10)])
