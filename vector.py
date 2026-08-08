@@ -1,4 +1,4 @@
-from langchain_ollama import OllamaEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from reddit_bot import make_dataframe
@@ -8,7 +8,9 @@ import uuid
 
 DB_DIR = "./chroma_db"
 
-embeddings = OllamaEmbeddings(model="mxbai-embed-large")
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
 
 def make_retriever(subreddit_name):
     print(f"Processing r/{subreddit_name} for make_retriever")
