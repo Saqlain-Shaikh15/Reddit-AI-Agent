@@ -1,8 +1,15 @@
-from langchain_ollama.llms import OllamaLLM
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
+import os
 from vector import make_retriever
 
-model = OllamaLLM(model="llama3")
+""" Use this script to test the connection to Reddit"""
+
+model = ChatGroq(
+    model="llama-3.3-70b-versatile", 
+    api_key=os.getenv("groq_api"),
+    temperature=0
+)
 
 template = """
 You are an expert on answering questions about the Subreddit
@@ -23,4 +30,4 @@ retriever = make_retriever(subreddit)
 context = retriever.invoke(question)
 result = chain.invoke({"context": context, "question": question})
 
-print(result)
+# print(result)

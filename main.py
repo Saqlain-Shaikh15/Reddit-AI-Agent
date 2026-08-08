@@ -1,4 +1,3 @@
-from langchain_ollama.llms import OllamaLLM
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from vector import make_retriever
@@ -74,9 +73,10 @@ def ask():
 
     context = retriever.invoke(question)
     result = chain.invoke({"context": context, "question": question})
-    print(result)
+    # print(result)
 
     return jsonify({"answer": result.content})
 
 if __name__ == "__main__":
-    app.run(port=8000, debug=True)
+    port = int(os.environ.get("PORT", 8000))
+    app.run(host="0.0.0.0", port=port)
